@@ -5,7 +5,7 @@ Nom = ProjetGit
 Version = 1.0
 
 ## Moteur
-Vitesse = 100
+Vitesse = 200
 Gravite = 9.81
 
 ## Affichage
