@@ -13,5 +13,5 @@ Largeur = 800
 Hauteur = 600
 
 ## Audio
-Volume = 80
+Volume = 100
 Musique = active
