@@ -1,0 +1,17 @@
+# Projet de démonstration
+
+## Configuration
+Nom = ProjetGit
+Version = 1.0
+
+## Moteur
+Vitesse = 100
+Gravite = 9.81
+
+## Affichage
+Largeur = 800
+Hauteur = 600
+
+## Audio
+Volume = 80
+Musique = active
