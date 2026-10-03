@@ -1,0 +1,8 @@
+Ce que la coquille fait a ma place :
+NkCanvasApp cree la fenetre, choisit et initialise le moteur de rendu parmi cinq, ouvre la boucle principale (temps, evenements, mise a jour, dessin dans cet ordre), gere le cycle de vie mobile (pause, reprise, surface detruite, zone sure), et appelle Clear/Display a ma place entre chaque image. Je n'ecris ni la verification IsOpen, ni la boucle while, ni l'appel PollEvent : tout cela est deja fait dans Execute(), hors de ma vue.
+
+Ce qui se passe si je configure dans OnInit :
+Rien ne change, et aucune erreur n'est levee. Le commentaire du code source est explicite a ce sujet : les reglages de NkCanvasAppConfig sont lus UNE SEULE FOIS, avant la creation de la fenetre, et OnInit() est appele seulement une fois que la fenetre et la cible de rendu existent deja. Modifier Config().title ou Config().width dans OnInit n'a donc aucun effet observable : la fenetre a deja ete creee avec les valeurs du constructeur, et rien ne relit la configuration apres coup.
+
+Ce qui se passe sans NKMain.h :
+Tout compile sans avertissement, car nkmain est une fonction C++ ordinaire du point de vue du compilateur. L'echec survient seulement a l'edition de liens, avec un symbole que je n'ai jamais ecrit moi-meme (WinMain sous Windows, par exemple). Le symptome general a retenir : une erreur de lien qui nomme un symbole absent de mon propre code signale presque toujours un point d'entree de plateforme manquant, donc un en-tete comme NKMain.h oublie.
