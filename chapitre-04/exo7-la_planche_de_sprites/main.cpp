@@ -39,7 +39,7 @@ int main() {
         int x = (frame % C) * W;
         int y = (frame / C) * H;
 
-        std::cout << "case "
+        std::cout << frame << " "
                   << x << " "
                   << y << " "
                   << W << " "
