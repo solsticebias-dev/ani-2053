@@ -1,101 +1,54 @@
-#include <iostream>
+#include <cstdio>
 #include <string>
-#include <vector>
-#include <cmath>
+#include <map>
 
-struct Objet {
-    std::string nom;
-    int parent;
-
-    double tx;
-    double ty;
-    double angle;
-    double scale;
-
-    double worldX;
-    double worldY;
-    double worldAngle;
-    double worldScale;
-
-    int profondeur;
+struct Obj {
+    long long x, y, angle, scale, level;
 };
 
 int main() {
     int n;
-    std::cin >> n;
+    if (std::scanf("%d", &n) != 1) return 0;
 
-    std::vector<Objet> objets(n);
+    std::map<std::string, Obj> objs;
+    long long profondeur = 0;
+    char nom[64], parent[64];
 
     for (int i = 0; i < n; ++i) {
-        std::cin >> objets[i].nom
-                 >> objets[i].parent
-                 >> objets[i].tx
-                 >> objets[i].ty
-                 >> objets[i].angle
-                 >> objets[i].scale;
+        long long tx, ty, angle, echelle;
+        std::scanf("%63s %63s %lld %lld %lld %lld", nom, parent, &tx, &ty, &angle, &echelle);
 
-        int p = objets[i].parent;
-
-        if (p == -1) {
-            objets[i].worldX = objets[i].tx;
-            objets[i].worldY = objets[i].ty;
-            objets[i].worldAngle = objets[i].angle;
-            objets[i].worldScale = objets[i].scale;
-            objets[i].profondeur = 0;
+        Obj o;
+        if (std::string(parent) == "-") {
+            o.x = tx;
+            o.y = ty;
+            o.angle = ((angle % 360) + 360) % 360;
+            o.scale = echelle;
+            o.level = 1;
+        } else {
+            const Obj &p = objs[parent];
+            long long ax = tx * p.scale;
+            long long ay = ty * p.scale;
+            long long c = 0, s = 0;
+            if (p.angle == 0)        { c = 1;  s = 0; }
+            else if (p.angle == 90)  { c = 0;  s = 1; }
+            else if (p.angle == 180) { c = -1; s = 0; }
+            else                     { c = 0;  s = -1; }
+            long long rx = ax * c - ay * s;
+            long long ry = ax * s + ay * c;
+            o.x = p.x + rx;
+            o.y = p.y + ry;
+            o.angle = (((p.angle + angle) % 360) + 360) % 360;
+            o.scale = p.scale * echelle;
+            o.level = p.level + 1;
         }
-        else {
-            const Objet& parent = objets[p];
 
-            double angleRad = parent.worldAngle * 3.141592653589793 / 180.0;
+        objs[nom] = o;
+        if (o.level > profondeur) profondeur = o.level;
 
-            double x = objets[i].tx * parent.worldScale;
-            double y = objets[i].ty * parent.worldScale;
-
-            double rotatedX = x * std::cos(angleRad)
-                            - y * std::sin(angleRad);
-
-            double rotatedY = x * std::sin(angleRad)
-                            + y * std::cos(angleRad);
-
-            objets[i].worldX = parent.worldX + rotatedX;
-            objets[i].worldY = parent.worldY + rotatedY;
-
-            objets[i].worldAngle =
-                parent.worldAngle + objets[i].angle;
-
-            while (objets[i].worldAngle >= 360.0) {
-                objets[i].worldAngle -= 360.0;
-            }
-
-            while (objets[i].worldAngle < 0.0) {
-                objets[i].worldAngle += 360.0;
-            }
-
-            objets[i].worldScale =
-                parent.worldScale * objets[i].scale;
-
-            objets[i].profondeur =
-                parent.profondeur + 1;
-        }
+        std::printf("%s %lld %lld %lld %lld\n", nom, o.x, o.y, o.angle, o.scale);
     }
 
-    for (const Objet& objet : objets) {
-        std::cout << objet.nom << " "
-                  << objet.worldX << " "
-                  << objet.worldY << " "
-                  << objet.worldAngle << " "
-                  << objet.worldScale << "\n";
-    }
-
-    int profondeurMax = 0;
-
-    for (const Objet& objet : objets) {
-        if (objet.profondeur > profondeurMax) {
-            profondeurMax = objet.profondeur;
-        }
-    }
-
-    std::cout << "PROFONDEUR " << profondeurMax << "\n";
-
+    std::printf("PROFONDEUR %lld\n", profondeur);
     return 0;
 }
