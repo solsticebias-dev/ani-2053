@@ -1,0 +1,19 @@
+Ten totals:
+<total 1>
+<total 2>
+<total 3>
+<total 4>
+<total 5>
+<total 6>
+<total 7>
+<total 8>
+<total 9>
+<total 10>
+
+One thread: <total obtenu avec un seul fil>
+
+Release: <total 1>, <total 2>, <total 3>
+
+Why:
+compteur += 1 n'est pas une seule operation : le processeur lit la valeur en memoire, lui ajoute 1, puis reecrit le resultat. Quand deux fils executent ces trois etapes en meme temps, ils peuvent lire la meme valeur, ajouter 1 chacun et ecrire le meme resultat : deux incrementations n'en produisent qu'une, et une incrementation est perdue. Avec huit fils et un million d'incrementations chacun, ces pertes se repetent un tres grand nombre de fois : le total est inferieur aux 8 000 000 attendus, et different a chaque execution, car il depend du moment exact ou chaque fil est interrompu. Avec un seul fil, personne ne peut s'intercaler entre la lecture et l'ecriture : le total est exact (1 000 000).
+En Release, le compilateur optimise la boucle : il peut garder compteur dans un registre pendant toute la boucle et ne l'ecrire en memoire qu'une fois a la fin, voire remplacer la boucle par une seule addition. Chaque fil ne touche alors la memoire partagee qu'une seule fois, la fenetre de course devient minuscule et le total parait souvent juste. Ce n'est pas une correction : la course existe toujours, elle est seulement devenue rare et plus difficile a observer. (Adapte cette phrase a ce que tu as vraiment observe.)
