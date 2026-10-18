@@ -1,0 +1,13 @@
+Observation:
+Le programme affiche "a : m1 pris, attend 100 ms" et "b : m2 pris, attend 100 ms", puis plus rien : ni message d'erreur, ni plantage, ni sortie. Le processus reste vivant (Get-Process le montre), consomme presque aucun processeur, et le terminal ne rend jamais la main. Cela s'est produit a chaque execution. Il a fallu tuer le processus a la main.
+
+Pause:
+Fil a : ligne <N1> du programme qui fige, NkScopedLockMutex verrouA2(m2). Il attend le verrou m2, detenu par le fil b.
+Fil b : ligne <N2> du programme qui fige, NkScopedLockMutex verrouB2(m1). Il attend le verrou m1, detenu par le fil a.
+Releves avec gdb attache au processus fige (thread apply all bt).
+
+Correction:
+Les deux fils prennent maintenant les verrous dans le meme ordre : m1 puis m2. Aucun verrou et aucune attente de 100 ms n'a ete retire. Lance trois fois : le programme se termine a chaque fois par "fini".
+
+Rule:
+Dans tout le programme, tous les fils prennent leurs verrous dans le meme ordre global (par exemple m1 avant m2, numerotes une fois pour toutes). Deux fils ne peuvent alors jamais s'attendre mutuellement : celui qui detient m2 n'a pas besoin de m1, car s'il en avait besoin il l'aurait pris avant. La regle doit etre ecrite et partagee par toute l'equipe, car rien dans le compilateur ne la verifie.
