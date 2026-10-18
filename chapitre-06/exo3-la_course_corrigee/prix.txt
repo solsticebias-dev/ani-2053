@@ -1,0 +1,10 @@
+Unprotected: total <total> / mediane <ms> ms
+Mutex: total <total> / mediane <ms> ms
+Atomic: total <total> / mediane <ms> ms
+Local: total <total> / mediane <ms> ms
+
+The cheapest:
+<la version la plus rapide dans tes mesures, probablement Local>
+
+Why:
+Chaque version paie quelque chose de different. La version sans protection ne paie rien mais n'est pas fiable : le total depend du moment ou chaque fil est interrompu, ou le compilateur a pu regrouper les ecritures en Release. La version avec verrou fait attendre les huit fils les uns derriere les autres a chaque incrementation (un million de prises et de liberations du verrou par fil) : elle donne le bon total mais c'est la plus lente. Dans ma version, le verrou est pris autour de chaque incrementation, pas autour de toute la boucle. La version atomique remplace le verrou par une operation indivisible du processeur : plus rapide que le verrou, mais chaque FetchAdd force les coeurs a se mettre d'accord sur la meme case memoire, ce qui coute plus qu'une addition ordinaire. La version locale ne partage rien pendant le travail : chaque fil compte dans sa propre variable et on additionne les huit totaux apres le Join. Il n'y a ni attente ni synchronisation, c'est donc la moins chere. Mes mesures : <rappelle ici les quatre medianes>. Je choisirais la version locale chaque fois que le travail se decoupe ainsi, et l'atomique quand il faut vraiment partager un compteur : la surete vient de la facon de partager, pas du nombre de verrous.

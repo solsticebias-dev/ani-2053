@@ -1,0 +1,8 @@
+Task: additionner 1000 entiers dans une variable locale, 200 fois. Le resultat de chaque tache est conserve dans un tableau puis somme et affiche (controle), pour que le compilateur ne supprime pas le travail.
+Pool: <t1> <t2> <t3> ms
+Threads: <t1> <t2> <t3> ms
+Workers: <nombre affiche par GetNumWorkers>
+Long task: reserve <mediane> ms, fils <mediane> ms (tache 100 fois plus longue)
+
+Why:
+Creer un fil coute cher : le systeme doit reserver une pile, creer l'objet fil et l'ordonnancer, puis le detruire a la fin. Avec 200 fils pour 200 taches tres courtes, ce cout de creation est du meme ordre que le calcul lui-meme, voire plus grand : c'est ce que montre l'ecart de mes mesures. La reserve cree ses fils une seule fois (au nombre indique par Workers) et les reutilise : soumettre une tache ne coute qu'un ajout dans une file. Quand la tache devient 100 fois plus longue, le calcul domine et le cout de creation d'un fil devient negligeable devant lui : l'ecart entre les deux versions se reduit, parce que la ou la tache est longue, ce qui compte est le temps de calcul et le nombre de coeurs disponibles, pas le cout de lancement. Mes chiffres : <rappelle ici les quatre medianes>.
