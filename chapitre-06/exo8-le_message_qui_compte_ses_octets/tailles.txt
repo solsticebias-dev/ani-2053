@@ -1,0 +1,14 @@
+Full types: <octets plein> bytes (<bits plein> bits) : WriteU8 pour l'etat et le numero, WriteF32 pour x, y et l'angle, WriteI32 pour la sante.
+Quantised: <octets quantifie> bytes (<bits quantifie> bits) : WriteBool pour l'etat, WriteU8 pour le numero, WriteF32Q a 0,01 m pour x et y (bornes -500 a 500), WriteF32Q a 0,5 degre pour l'angle (0 a 360), WriteInt de 0 a 100 pour la sante.
+
+Largest error:
+x : <ecart x> m
+y : <ecart y> m
+angle : <ecart angle> degres
+sante : <ecart sante>
+numero : <ecart numero>
+etat (vivant) : <ecart vivant>
+Mesures sur 100000 etats tires au hasard dans les bornes de l'enonce, lus avec les memes bornes, la meme precision et le meme ordre qu'a l'ecriture.
+
+What the player would see:
+Un ecart de position inferieur ou egal a un demi-centimetre est invisible a l'ecran : un personnage fait environ 1,8 m, et la position est de toute facon corrigee ou lissee a chaque mise a jour. Un ecart d'angle d'un quart de degre est lui aussi invisible pour une camera ou l'orientation d'un personnage ; il ne deviendrait sensible que pour un tir a tres longue distance (a 100 m, 0,25 degre decale le point vise d'environ 0,44 m). La sante et le numero sont lus exactement, sans perte. Le paquet quantifie occupe environ <rapport> fois moins de place que le paquet en types complets, pour des ecarts que le joueur ne peut pas voir : l'economie ne se paie pas en qualite perceptible. Ces paquets sont lus par un second morceau de code qui ne recoit que les octets et leur taille, dans le meme programme et sans envoi sur le reseau (aller-retour en memoire) : la lecture ne peut donc s'appuyer que sur les bornes, la precision et l'ordre communs.
